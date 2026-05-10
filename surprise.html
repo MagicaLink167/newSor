@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Sorpresa | Mágica Link</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow:hidden}
+
+/* Top bar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.1);transition:opacity .3s}
+.topbar.hidden{opacity:0;pointer-events:none}
+.topbar-back{display:flex;align-items:center;gap:8px;background:none;border:none;color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;cursor:pointer;padding:8px 12px;border-radius:8px;transition:all .2s;text-decoration:none;font-family:inherit}
+.topbar-back:hover{color:#fff;background:rgba(255,255,255,0.1)}
+.topbar-back svg{width:18px;height:18px;transition:transform .2s}
+.topbar-back:hover svg{transform:translateX(-2px)}
+.topbar-info{font-size:12px;color:rgba(255,255,255,0.5)}
+.topbar-timer{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:rgba(201,70,123,0.1);border:1px solid rgba(201,70,123,0.2);font-size:12px;color:#c9467b;font-family:monospace;font-weight:500}
+.topbar-timer svg{width:14px;height:14px;opacity:.7}
+
+/* Floating back (always visible) */
+.float-back{position:fixed;top:16px;left:16px;z-index:90;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:rgba(255,255,255,0.7)}
+.float-back:hover{background:rgba(0,0,0,0.7);border-color:rgba(201,70,123,0.4);color:#fff;transform:scale(1.05)}
+.float-back svg{width:20px;height:20px}
+
+/* Bottom bar */
+.bottombar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:rgba(0,0,0,0.6);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.05);transition:opacity .3s}
+.bottombar.hidden{opacity:0;pointer-events:none}
+.bottombar-item{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.3)}
+.bottombar-item svg{width:14px;height:14px}
+
+/* Content */
+.surprise-frame{width:100%;height:100%;border:none;display:block}
+
+/* Loading */
+.loading{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:200}
+.loading.hidden{display:none}
+.spinner{width:40px;height:40px;border:2px solid rgba(255,255,255,0.1);border-top-color:#c9467b;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:14px;color:rgba(255,255,255,0.5)}
+
+/* Error pages */
+.error-page{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;padding:20px}
+.error-content{text-align:center;max-width:400px}
+.error-content .icon{font-size:64px;margin-bottom:16px}
+.error-content h1{font-size:24px;font-weight:700;color:#fff;margin-bottom:12px}
+.error-content p{font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:24px;line-height:1.6}
+.error-content a,.error-content button{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:50px;font-size:14px;font-weight:600;color:#fff;background:linear-gradient(135deg,#c9467b,#d4a574);text-decoration:none;transition:all .3s;border:none;cursor:pointer}
+.error-content a:hover,.error-content button:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(201,70,123,0.3)}
+.error-content svg{width:18px;height:18px}
+.error-content .hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p>Cargando tu sorpresa...</p>
+</div>
+
+<!-- Expired Error -->
+<div class="error-page" id="expiredError" style="display:none">
+  <div class="error-content">
+    <div class="icon">⏰</div>
+    <h1>Este enlace ha expirado</h1>
+    <p>Los enlaces de sorpresas están activos por 48 horas.<br>Pide a quien te la envió que cree una nueva. 💝</p>
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Ir al Inicio
+    </a>
+  </div>
+</div>
+
+<!-- Not Found Error -->
+<div class="error-page" id="notFoundError" style="display:none">
+  <div class="error-content">
+    <div class="icon">🔍</div>
+    <h1>Sorpresa no encontrada</h1>
+    <p>El enlace que buscas no existe o es inválido.</p>
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Ir al Inicio
+    </a>
+  </div>
+</div>
+
+<!-- Data Error -->
+<div class="error-page" id="dataError" style="display:none">
+  <div class="error-content">
+    <div class="icon">⚠️</div>
+    <h1>Error al cargar</h1>
+    <p>No se pudo decodificar la sorpresa.<br>El enlace puede estar dañado o incompleto.</p>
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Ir al Inicio
+    </a>
+  </div>
+</div>
+
+<!-- Active Surprise View -->
+<div id="surpriseView" style="display:none">
+  <a href="index.html" class="float-back" title="Volver al inicio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+
+  <div class="topbar" id="topbar">
+    <a href="index.html" class="topbar-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Volver</span>
+    </a>
+    <span class="topbar-info" id="topbarInfo">Mágica Link</span>
+    <div class="topbar-timer" id="topbarTimer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="timerText">47:59:59</span>
+    </div>
+  </div>
+
+  <iframe class="surprise-frame" id="surpriseFrame" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+
+  <div class="bottombar" id="bottombar">
+    <div class="bottombar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="createdText"></span>
+    </div>
+    <div class="bottombar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="expiresText"></span>
+    </div>
+    <div class="bottombar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#c9467b" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span style="color:rgba(255,255,255,0.2)">Mágica Link</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function formatDate(d) {
+    return d.toLocaleDateString('es-LATAM', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  var expiresAt = null;
+
+  function startCountdown() {
+    var timerEl = document.getElementById('timerText');
+    function update() {
+      if (!expiresAt) { timerEl.textContent = '--:--:--'; return; }
+      var diff = expiresAt.getTime() - Date.now();
+      if (diff <= 0) {
+        timerEl.textContent = 'Expirado';
+        document.getElementById('surpriseView').style.display = 'none';
+        document.getElementById('expiredError').style.display = 'flex';
+        return;
+      }
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      timerEl.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+      setTimeout(update, 1000);
+    }
+    update();
+  }
+
+  function autoHideControls() {
+    var topbar = document.getElementById('topbar');
+    var bottombar = document.getElementById('bottombar');
+    var timeout;
+    function show() {
+      topbar.classList.remove('hidden');
+      bottombar.classList.remove('hidden');
+      clearTimeout(timeout);
+      timeout = setTimeout(hide, 5000);
+    }
+    function hide() {
+      topbar.classList.add('hidden');
+      bottombar.classList.add('hidden');
+    }
+    document.addEventListener('mousemove', show);
+    document.addEventListener('touchstart', show);
+    show();
+  }
+
+  function renderSurprise(html, createdAt) {
+    var now = new Date();
+    if (createdAt) {
+      var created = new Date(createdAt);
+      expiresAt = new Date(created.getTime() + 48 * 60 * 60 * 1000);
+
+      document.getElementById('createdText').textContent = 'Creado ' + formatDate(created);
+      document.getElementById('expiresText').textContent = 'Expira ' + formatDate(expiresAt);
+
+      // Check if already expired
+      if (Date.now() > expiresAt.getTime()) {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('expiredError').style.display = 'flex';
+        return;
+      }
+    } else {
+      expiresAt = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+      document.getElementById('createdText').textContent = 'Creado ' + formatDate(now);
+      document.getElementById('expiresText').textContent = 'Expira ' + formatDate(expiresAt);
+    }
+
+    var frame = document.getElementById('surpriseFrame');
+    var blob = new Blob([html], { type: 'text/html' });
+    frame.src = URL.createObjectURL(blob);
+
+    frame.onload = function() {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('surpriseView').style.display = 'block';
+      startCountdown();
+      autoHideControls();
+    };
+
+    setTimeout(function() {
+      if (document.getElementById('surpriseView').style.display !== 'block') {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('surpriseView').style.display = 'block';
+        startCountdown();
+        autoHideControls();
+      }
+    }, 10000);
+  }
+
+  function showError(id) {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById(id).style.display = 'flex';
+  }
+
+  function showErrorWithMsg(msg) {
+    var el = document.getElementById('dataError');
+    el.querySelector('p').textContent = msg;
+    document.getElementById('loading').classList.add('hidden');
+    el.style.display = 'flex';
+  }
+
+  // Init - check for jsonblob ID parameter
+  var params = new URLSearchParams(window.location.search);
+  var blobId = params.get('s');
+
+  if (blobId) {
+    // Fetch surprise data from jsonblob.com
+    fetch('https://jsonblob.com/api/jsonBlob/' + blobId)
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        if (!data || !data.html) {
+          throw new Error('Datos de sorpresa no encontrados');
+        }
+        renderSurprise(data.html, data.createdAt);
+      })
+      .catch(function(err) {
+        console.error('Error loading surprise:', err);
+        if (err.message && err.message.includes('404')) {
+          showError('notFoundError');
+        } else {
+          showErrorWithMsg(
+            'No se pudo cargar la sorpresa.\n\n' +
+            'Posibles causas:\n' +
+            '• El enlace expiró (48 horas)\n' +
+            '• Problema de conexión temporal\n\n' +
+            'Error: ' + err.message
+          );
+        }
+      });
+  } else {
+    // No blob ID found
+    showError('notFoundError');
+  }
+})();
+</script>
+</body>
+</html>
