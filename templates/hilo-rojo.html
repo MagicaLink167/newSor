@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Para Ti · Hilo Rojo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Dancing+Script:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+--crema: #FDF9F3;
+--crema-suave: #F8F3EA;
+--rojo-amor: #A63D40;
+--rojo-claro: #C75B5E;
+--dorado: #B8965A;
+--dorado-claro: #D4B896;
+--negro: #080706;
+}
+body { font-family: 'Playfair Display', serif; background-color: var(--negro); color: #F5F2ED; overflow-x: hidden; min-height: 100vh; }
+
+/* Pantalla del Hilo Rojo */
+.pantalla-hilo {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+  background: radial-gradient(ellipse at center, var(--crema) 0%, var(--crema-suave) 100%);
+  z-index: 9999; display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  transition: opacity 2s ease, visibility 2s ease;
+}
+.pantalla-hilo.oculta { opacity: 0; visibility: hidden; }
+.pantalla-hilo::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 30% 30%, rgba(166, 61, 64, 0.04) 0%, transparent 50%),
+  radial-gradient(ellipse at 70% 70%, rgba(184, 150, 90, 0.03) 0%, transparent 50%);
+  pointer-events: none; animation: luzAmbiente 8s ease-in-out infinite alternate;
+}
+@keyframes luzAmbiente { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+.vineta {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.12) 100%);
+  pointer-events: none; z-index: 5;
+}
+
+/* Botón Empezar */
+.boton-empezar-container { position: relative; z-index: 20; margin-bottom: 30px; text-align: center; }
+.boton-empezar {
+  background: linear-gradient(135deg, var(--rojo-amor), #c24b4e);
+  border: none; color: white; font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 500; letter-spacing: 4px;
+  padding: 16px 48px; border-radius: 50px; cursor: pointer;
+  box-shadow: 0 10px 25px rgba(166, 61, 64, 0.5), 0 0 20px rgba(184, 150, 90, 0.4);
+  transition: all 0.4s ease; border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px); text-transform: uppercase;
+  transform: scale(1); animation: palpitar 2s ease-in-out infinite;
+}
+.boton-empezar:hover {
+  transform: scale(1.08);
+  background: linear-gradient(135deg, #b84c4f, #d6696c);
+  box-shadow: 0 15px 35px rgba(166, 61, 64, 0.7), 0 0 30px var(--dorado);
+  letter-spacing: 6px;
+}
+@keyframes palpitar { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+.contenedor-central { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.contenedor-svg { position: relative; width: 70vmin; height: 60vmin; max-width: 450px; max-height: 400px; }
+.svg-hilo { width: 100%; height: 100%; overflow: visible; }
+.hilo-principal {
+  fill: none; stroke: var(--rojo-amor); stroke-width: 2.5;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1500; stroke-dashoffset: 1500;
+  filter: drop-shadow(0 1px 3px rgba(166, 61, 64, 0.4));
+}
+.hilo-resplandor {
+  fill: none; stroke: rgba(166, 61, 64, 0.3); stroke-width: 10;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1500; stroke-dashoffset: 1500; filter: blur(8px);
+}
+.corazon-hilo.dibujar { animation: trazarCorazon 5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.corazon-resplandor.dibujar { animation: trazarCorazon 5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes trazarCorazon { to { stroke-dashoffset: 0; } }
+
+.letra-hilo {
+  fill: none; stroke: var(--rojo-amor); stroke-width: 3;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 350; stroke-dashoffset: 350; opacity: 0;
+  filter: drop-shadow(0 2px 4px rgba(166, 61, 64, 0.5));
+}
+.letra-resplandor {
+  fill: none; stroke: rgba(166, 61, 64, 0.35); stroke-width: 10;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 350; stroke-dashoffset: 350; opacity: 0; filter: blur(6px);
+}
+.letra-hilo.dibujar { opacity: 1; animation: trazarLetra 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.letra-resplandor.dibujar { opacity: 1; animation: trazarLetra 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes trazarLetra { to { stroke-dashoffset: 0; } }
+
+.resplandor-corazon {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%);
+  width: 1px; height: 1px; background: transparent; opacity: 0; pointer-events: none;
+}
+.resplandor-corazon.visible { opacity: 1; }
+.resplandor-corazon::before, .resplandor-corazon::after {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(166, 61, 64, 0.15) 0%, transparent 70%);
+  animation: respirarProfundo 4s ease-in-out infinite;
+}
+.resplandor-corazon::before { width: 250px; height: 250px; }
+.resplandor-corazon::after { width: 180px; height: 180px; animation-delay: -2s; }
+@keyframes respirarProfundo {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+}
+
+.polvo-estelar { position: absolute; border-radius: 50%; pointer-events: none; opacity: 0; }
+.punto-luz {
+  position: absolute; width: 12px; height: 12px;
+  background: radial-gradient(circle, #fff 0%, var(--rojo-claro) 50%, transparent 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--rojo-amor), 0 0 30px rgba(166, 61, 64, 0.6);
+  opacity: 0; pointer-events: none; z-index: 10;
+}
+.petalo { position: absolute; pointer-events: none; z-index: 100; }
+.petalo-forma {
+  width: 18px; height: 24px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.foto-revelar {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 240px; height: 300px; opacity: 0; z-index: 10;
+}
+.foto-revelar.visible {
+  animation: revelacionEpica 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes revelacionEpica {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(-180deg); filter: blur(30px) brightness(2); }
+  60% { opacity: 0.8; filter: blur(5px) brightness(1.1); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); filter: blur(0) brightness(1); }
+}
+.foto-marco {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, #FFFEFA, #F5EFE6);
+  border-radius: 5px; padding: 12px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.1), 0 0 60px rgba(184, 150, 90, 0.1);
+  position: relative;
+}
+.foto-marco::before {
+  content: ''; position: absolute; inset: 7px;
+  border: 1px solid rgba(166, 61, 64, 0.1); border-radius: 2px; pointer-events: none;
+}
+.foto-interior { width: 100%; height: 100%; overflow: hidden; border-radius: 2px; }
+.foto-interior img { width: 100%; height: 100%; object-fit: cover; animation: kenBurns 20s ease-in-out infinite alternate; }
+@keyframes kenBurns { 0% { transform: scale(1) translate(0, 0); } 100% { transform: scale(1.05) translate(-1%, -1%); } }
+
+/* HÉROE MÁGICO */
+.hero-magico {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 9000;
+  display: flex; justify-content: center; align-items: center;
+  background: var(--negro); overflow: hidden;
+  opacity: 0; visibility: hidden; transition: opacity 0.5s ease;
+}
+.hero-magico.visible { opacity: 1; visibility: visible; }
+.hero-magico.oculto { opacity: 0; visibility: hidden; pointer-events: none; }
+.hero-fondo {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(166, 61, 64, 0.08) 0%, transparent 50%),
+  radial-gradient(ellipse at 20% 80%, rgba(184, 150, 90, 0.05) 0%, transparent 40%),
+  radial-gradient(ellipse at 80% 20%, rgba(166, 61, 64, 0.05) 0%, transparent 40%), var(--negro);
+}
+.onda-magica {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  border-radius: 50%; pointer-events: none; opacity: 0;
+}
+.onda-magica.activa { animation: ondaExpandirse 3s ease-out forwards; }
+@keyframes ondaExpandirse {
+  0% { width: 50px; height: 50px; opacity: 0.6; border: 2px solid rgba(184, 150, 90, 0.6); }
+  100% { width: 600px; height: 600px; opacity: 0; border: 1px solid rgba(184, 150, 90, 0); }
+}
+.onda-magica.d1 { animation-delay: 0s; }
+.onda-magica.d2 { animation-delay: 0.8s; }
+.onda-magica.d3 { animation-delay: 1.6s; }
+.circulo-pulsante {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(166, 61, 64, 0.1) 0%, transparent 70%);
+  opacity: 0; pointer-events: none;
+}
+.circulo-pulsante.activo { animation: pulsoLuz 4s ease-in-out infinite; }
+@keyframes pulsoLuz {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+}
+.destello {
+  position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
+  opacity: 0; pointer-events: none;
+  box-shadow: 0 0 10px #fff, 0 0 20px rgba(184, 150, 90, 0.5);
+}
+.destello.activo { animation: destellar 2.5s ease-in-out forwards; }
+@keyframes destellar {
+  0% { opacity: 0; transform: scale(0); }
+  20% { opacity: 1; transform: scale(1.5); }
+  40% { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0); }
+}
+.hero-contenido {
+  position: relative; z-index: 10; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 30px;
+}
+.frase-magica { position: relative; opacity: 0; transform: scale(0.9); }
+.frase-magica.visible { animation: fraseAparece 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+@keyframes fraseAparece {
+  0% { opacity: 0; transform: scale(0.9); filter: blur(20px); }
+  50% { filter: blur(5px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+.frase-pequena {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  letter-spacing: 8px; text-transform: uppercase; color: var(--dorado);
+  margin-bottom: 15px; opacity: 0;
+}
+.frase-pequena.visible { animation: fadeInUp 1.5s ease forwards; animation-delay: 0.3s; }
+.frase-grande {
+  font-family: 'Dancing Script', cursive; font-size: clamp(2.5rem, 8vw, 5rem);
+  color: #fff; line-height: 1.2;
+  text-shadow: 0 0 40px rgba(166, 61, 64, 0.5), 0 0 80px rgba(166, 61, 64, 0.3);
+  position: relative;
+}
+.frase-grande::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: brilloTexto 4s ease-in-out infinite; pointer-events: none;
+}
+@keyframes brilloTexto { 0%, 100% { left: -100%; } 50% { left: 150%; } }
+.letra-animada {
+  display: inline-block; opacity: 0; transform: translateY(30px) scale(0.8);
+}
+.letra-animada.visible { animation: letraAparece 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+@keyframes letraAparece { to { opacity: 1; transform: translateY(0) scale(1); } }
+.linea-decorativa {
+  width: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--dorado), transparent);
+  opacity: 0;
+}
+.linea-decorativa.visible { animation: lineaCrece 1.5s ease forwards; }
+@keyframes lineaCrece { 0% { width: 0; opacity: 0; } 50% { opacity: 1; } 100% { width: 200px; opacity: 1; } }
+.nombres-hero { position: relative; opacity: 0; transform: translateY(20px); }
+.nombres-hero.visible { animation: fadeInUp 1.5s ease forwards; }
+.nombres-texto {
+  font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-weight: 400; letter-spacing: 6px; color: var(--dorado-claro);
+}
+.texto-secundario {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-style: italic; color: rgba(255, 255, 255, 0.6); letter-spacing: 2px;
+  opacity: 0; max-width: 500px; line-height: 1.8;
+}
+.texto-secundario.visible { animation: fadeInUp 1.5s ease forwards; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.scroll-indicador {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  opacity: 0; cursor: pointer; transition: opacity 0.5s ease;
+}
+.scroll-indicador.visible { animation: fadeInUp 1s ease forwards; animation-delay: 1s; }
+.scroll-texto {
+  font-family: 'Cormorant Garamond', serif; font-size: 0.75rem;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--dorado);
+}
+.scroll-flecha {
+  width: 20px; height: 20px;
+  border-right: 1px solid var(--dorado); border-bottom: 1px solid var(--dorado);
+  transform: rotate(45deg); animation: flechaBounce 2s ease-in-out infinite;
+}
+@keyframes flechaBounce { 0%, 100% { transform: rotate(45deg) translate(0, 0); } 50% { transform: rotate(45deg) translate(5px, 5px); } }
+
+/* Fondo mágico dinámico */
+.fondo-magico { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
+.fondo-base { position: absolute; inset: 0; background: linear-gradient(175deg, #0a0908 0%, #12100e 50%, #0a0908 100%); }
+.fondo-gradiente { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.15; }
+.fondo-gradiente.uno {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(166, 61, 64, 0.6) 0%, transparent 70%);
+  top: -300px; left: -200px; animation: flotarG1 20s ease-in-out infinite;
+}
+.fondo-gradiente.dos {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(184, 150, 90, 0.5) 0%, transparent 70%);
+  bottom: -200px; right: -150px; animation: flotarG2 25s ease-in-out infinite;
+}
+.fondo-gradiente.tres {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(166, 61, 64, 0.4) 0%, transparent 70%);
+  top: 30%; left: 50%; animation: flotarG3 30s ease-in-out infinite;
+}
+@keyframes flotarG1 { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(100px, 50px) scale(1.2); } 66% { transform: translate(-50px, 100px) scale(0.9); } }
+@keyframes flotarG2 { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(-80px, -60px) scale(1.15); } 66% { transform: translate(60px, -80px) scale(0.85); } }
+@keyframes flotarG3 { 0%, 100% { transform: translate(-50%, 0) scale(1); } 33% { transform: translate(-50%, -50px) scale(1.3); } 66% { transform: translate(-50%, 50px) scale(0.8); } }
+
+.luz-flotante { position: absolute; border-radius: 50%; pointer-events: none; }
+.luz-flotante.tipo-1 {
+  width: 4px; height: 4px;
+  background: radial-gradient(circle, rgba(184, 150, 90, 0.8) 0%, transparent 70%);
+  animation: flotarLuz1 15s ease-in-out infinite;
+}
+.luz-flotante.tipo-2 {
+  width: 6px; height: 6px;
+  background: radial-gradient(circle, rgba(166, 61, 64, 0.6) 0%, transparent 70%);
+  animation: flotarLuz2 20s ease-in-out infinite;
+}
+.luz-flotante.tipo-3 {
+  width: 3px; height: 3px;
+  background: radial-gradient(circle, rgba(184, 150, 90, 0.8) 0%, transparent 70%);
+  animation: flotarLuz3 12s ease-in-out infinite;
+}
+@keyframes flotarLuz1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  25% { transform: translate(50px, -80px) scale(1.5); opacity: 0.7; }
+  50% { transform: translate(-30px, -150px) scale(0.8); opacity: 0.4; }
+  75% { transform: translate(80px, -100px) scale(1.2); opacity: 0.6; }
+}
+@keyframes flotarLuz2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+  33% { transform: translate(-60px, -120px) scale(1.8); opacity: 0.6; }
+  66% { transform: translate(40px, -200px) scale(0.6); opacity: 0.3; }
+}
+@keyframes flotarLuz3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  50% { transform: translate(30px, -180px) scale(1.4); opacity: 0.8; }
+}
+.polvo-ascendente {
+  position: absolute; width: 2px; height: 2px;
+  background: rgba(184, 150, 90, 0.4); border-radius: 50%;
+  animation: ascender 18s linear infinite;
+}
+@keyframes ascender {
+  0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 0.5; } 90% { opacity: 0.3; }
+  100% { transform: translateY(-50px) translateX(20px); opacity: 0; }
+}
+
+/* Contenido principal */
+.contenido { display: none; opacity: 0; }
+.contenido.visible { display: block; animation: revelar 1.5s ease forwards; }
+@keyframes revelar { to { opacity: 1; } }
+.seccion {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; padding: 90px 25px;
+  position: relative;
+}
+.titulo {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(1.9rem, 5.5vw, 2.8rem);
+  font-weight: 300; color: var(--dorado); margin-bottom: 50px;
+  text-align: center; letter-spacing: 0.08em;
+  opacity: 0; transform: translateY(25px); transition: all 0.9s ease;
+}
+.titulo.visible { opacity: 1; transform: translateY(0); }
+.titulo i { font-family: 'Dancing Script', cursive; font-style: italic; }
+.galeria {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 30px; width: 90%; max-width: 1100px;
+}
+.foto-galeria {
+  position: relative; height: 340px; border-radius: 8px; overflow: hidden;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
+  opacity: 0; transform: translateY(20px) scale(0.98);
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+}
+.foto-galeria.visible { opacity: 1; transform: translateY(0) scale(1); }
+.foto-galeria:hover { transform: translateY(-6px); }
+.foto-galeria img { width: 100%; height: 100%; object-fit: cover; animation: kenBurns 18s ease-in-out infinite alternate; }
+.foto-galeria:hover img { animation-play-state: paused; filter: brightness(1.06); }
+.pie-foto {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 28px 18px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  transform: translateY(100%); transition: transform 0.45s ease;
+}
+.pie-foto p { font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: #fff; text-align: center; }
+.foto-galeria:hover .pie-foto { transform: translateY(0); }
+.ver-mas {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 60px; height: 60px; background: rgba(184, 150, 90, 0.9);
+  border-radius: 50%; display: flex; justify-content: center; align-items: center;
+  opacity: 0; transition: all 0.4s ease; z-index: 5;
+}
+.foto-galeria:hover .ver-mas { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.ver-mas i { color: var(--negro); font-size: 1.4rem; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(8, 7, 6, 0.97); z-index: 10000;
+  display: flex; justify-content: center; align-items: center;
+  opacity: 0; visibility: hidden; transition: all 0.5s ease;
+  backdrop-filter: blur(15px);
+}
+.modal-overlay.visible { opacity: 1; visibility: visible; }
+.modal-contenido {
+  display: flex; flex-direction: column; align-items: center;
+  max-width: 90vw; max-height: 90vh;
+  transform: scale(0.9) translateY(30px);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-overlay.visible .modal-contenido { transform: scale(1) translateY(0); }
+.modal-foto {
+  position: relative; max-width: 500px; max-height: 50vh; border-radius: 8px;
+  overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+.modal-foto img { width: 100%; height: 100%; object-fit: cover; max-height: 50vh; }
+.modal-poema { max-width: 500px; text-align: center; padding: 35px 30px; }
+.modal-poema-titulo { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--dorado); margin-bottom: 20px; }
+.modal-poema-texto { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; line-height: 1.9; color: rgba(255, 255, 255, 0.85); font-style: italic; }
+.modal-poema-texto p { margin-bottom: 12px; }
+.modal-cerrar {
+  position: absolute; top: 20px; right: 20px; width: 50px; height: 50px;
+  background: rgba(184, 150, 90, 0.2); border: 1px solid rgba(184, 150, 90, 0.3);
+  border-radius: 50%; display: flex; justify-content: center; align-items: center;
+  cursor: pointer; transition: all 0.3s ease; z-index: 10;
+}
+.modal-cerrar:hover { background: rgba(184, 150, 90, 0.4); transform: rotate(90deg); }
+.modal-cerrar i { color: var(--dorado); font-size: 1.2rem; }
+.modal-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px;
+  background: rgba(184, 150, 90, 0.15); border: 1px solid rgba(184, 150, 90, 0.3);
+  border-radius: 50%; display: flex; justify-content: center; align-items: center;
+  cursor: pointer; transition: all 0.3s ease;
+}
+.modal-nav:hover { background: rgba(184, 150, 90, 0.3); }
+.modal-nav i { color: var(--dorado); font-size: 1.1rem; }
+.modal-anterior { left: 20px; }
+.modal-siguiente { right: 20px; }
+
+.contenedor-mensaje { width: 90%; max-width: 720px; }
+.caja-mensaje {
+  background: rgba(8, 7, 6, 0.85); backdrop-filter: blur(25px);
+  border-radius: 10px; padding: 50px 40px;
+  border: 1px solid rgba(184, 150, 90, 0.1);
+  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.3); position: relative; overflow: hidden;
+}
+.caja-mensaje::before {
+  content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(184, 150, 90, 0.02) 60deg, transparent 120deg);
+  animation: girar 50s linear infinite; pointer-events: none;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+.texto-mensaje { font-size: 1.3rem; line-height: 1.95; text-align: center; position: relative; z-index: 1; }
+.escrito {
+  font-family: 'Cormorant Garamond', serif; font-weight: 300; font-style: italic;
+  background: linear-gradient(135deg, #fff 0%, #E8D5B0 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.cursor {
+  display: inline-block; width: 2px; height: 1.4rem; background: var(--dorado);
+  margin-left: 3px; vertical-align: middle; animation: parpadear 1.1s ease-in-out infinite;
+}
+@keyframes parpadear { 0%, 40% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
+
+.contador { display: flex; justify-content: center; flex-wrap: wrap; gap: 25px; margin: 45px 0; }
+.tiempo-item {
+  text-align: center; background: rgba(8, 7, 6, 0.55); padding: 25px 20px;
+  border-radius: 8px; border: 1px solid rgba(184, 150, 90, 0.08);
+  min-width: 105px; transition: all 0.35s ease;
+}
+.tiempo-item:hover { transform: translateY(-4px); border-color: rgba(184, 150, 90, 0.2); }
+.tiempo-numero {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 4.5vw, 2.8rem); font-weight: 300;
+  background: linear-gradient(135deg, var(--dorado), #D4A574);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.tiempo-texto { font-size: 0.75rem; color: rgba(255, 255, 255, 0.45); text-transform: uppercase; letter-spacing: 2.5px; margin-top: 7px; }
+
+.boton {
+  background: transparent; color: var(--dorado);
+  border: 1px solid rgba(184, 150, 90, 0.45);
+  padding: 15px 42px; font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem; letter-spacing: 1.5px; border-radius: 25px;
+  cursor: pointer; transition: all 0.45s ease; position: relative; overflow: hidden;
+}
+.boton::before {
+  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(184, 150, 90, 0.12), transparent);
+  transition: left 0.5s ease;
+}
+.boton:hover { background: rgba(184, 150, 90, 0.12); transform: translateY(-2px); }
+.boton:hover::before { left: 100%; }
+.boton-wp { border-color: rgba(37, 211, 102, 0.45); color: #25D366; display: flex; align-items: center; gap: 10px; margin-top: 35px; }
+.boton-wp:hover { background: rgba(37, 211, 102, 0.12); }
+
+.btn-musica {
+  position: fixed; bottom: 25px; right: 25px; width: 48px; height: 48px;
+  border-radius: 50%; background: rgba(8, 7, 6, 0.9);
+  display: flex; justify-content: center; align-items: center;
+  cursor: pointer; z-index: 100; border: 1px solid rgba(184, 150, 90, 0.12);
+  opacity: 0; transform: translateY(18px); transition: all 0.45s ease;
+}
+.btn-musica.visible { opacity: 1; transform: translateY(0); }
+.btn-musica:hover { transform: scale(1.08); }
+.btn-musica i { font-size: 1.15rem; color: var(--dorado); }
+
+.marca-agua { padding: 55px 20px 35px; text-align: center; margin-top: 55px; }
+.marca-linea { width: 160px; height: 1px; background: linear-gradient(90deg, transparent, rgba(184, 150, 90, 0.35), transparent); margin: 0 auto 22px; }
+.marca-pequena { font-family: 'Cormorant Garamond', serif; font-size: 0.7rem; color: rgba(184, 150, 90, 0.35); letter-spacing: 2.5px; text-transform: uppercase; }
+.marca-grande { font-family: 'Dancing Script', cursive; font-size: 1.4rem; color: rgba(184, 150, 90, 0.5); margin-top: 6px; }
+
+@media (max-width: 768px) {
+  .contenedor-svg { width: 80vmin; height: 65vmin; }
+  .foto-revelar { width: 190px; height: 250px; }
+  .galeria { grid-template-columns: 1fr; max-width: 300px; }
+  .foto-galeria { height: 280px; }
+  .caja-mensaje { padding: 35px 25px; }
+  .contador { gap: 12px; }
+  .tiempo-item { min-width: 70px; padding: 18px 10px; }
+  .modal-contenido { padding: 20px; }
+  .modal-foto { max-width: 90vw; max-height: 35vh; }
+  .modal-poema { max-width: 90vw; padding: 25px 15px; }
+  .modal-nav { width: 40px; height: 40px; }
+  .modal-anterior { left: 10px; }
+  .modal-siguiente { right: 10px; }
+  .fondo-gradiente.uno { width: 400px; height: 400px; }
+  .fondo-gradiente.dos { width: 350px; height: 350px; }
+  .fondo-gradiente.tres { width: 300px; height: 300px; }
+  @keyframes ondaExpandirse {
+    0% { width: 30px; height: 30px; opacity: 0.6; border: 2px solid rgba(184, 150, 90, 0.6); }
+    100% { width: 350px; height: 350px; opacity: 0; border: 1px solid rgba(184, 150, 90, 0); }
+  }
+  .boton-empezar { font-size: 1.4rem; padding: 12px 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Pantalla del Hilo Rojo -->
+<div class="pantalla-hilo" id="pantallaHilo">
+  <div class="vineta"></div>
+  <div class="resplandor-corazon" id="resplandor"></div>
+  <div class="boton-empezar-container">
+    <button class="boton-empezar" id="btnEmpezar">Empezar</button>
+  </div>
+  <div class="contenedor-central">
+    <div class="contenedor-svg" id="contenedorSvg">
+      <svg class="svg-hilo" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+        <g id="grupoCorazon">
+          <path id="corazonResplandor" class="hilo-resplandor corazon-resplandor" d="M 200 330 C 200 330, 50 210, 50 130 C 50 70, 100 35, 160 60 C 200 80, 200 110, 200 110 C 200 110, 200 80, 240 60 C 300 35, 350 70, 350 130 C 350 210, 200 330, 200 330"/>
+          <path id="corazonHilo" class="hilo-principal corazon-hilo" d="M 200 330 C 200 330, 50 210, 50 130 C 50 70, 100 35, 160 60 C 200 80, 200 110, 200 110 C 200 110, 200 80, 240 60 C 300 35, 350 70, 350 130 C 350 210, 200 330, 200 330"/>
+        </g>
+        <g id="textoTeAmo" transform="translate(70,370)">
+          <path id="tR" class="letra-resplandor" d="M 0 0 L 50 0 M 25 0 L 25 50"/>
+          <path id="tH" class="letra-hilo" d="M 0 0 L 50 0 M 25 0 L 25 50"/>
+          <path id="eR" class="letra-resplandor" d="M 85 15 Q 60 15, 60 28 Q 60 45, 85 45 Q 98 45, 98 30 L 65 30"/>
+          <path id="eH" class="letra-hilo" d="M 85 15 Q 60 15, 60 28 Q 60 45, 85 45 Q 98 45, 98 30 L 65 30"/>
+          <path id="aR" class="letra-resplandor" d="M 145 48 L 168 0 L 192 48 M 152 30 L 184 30"/>
+          <path id="aH" class="letra-hilo" d="M 145 48 L 168 0 L 192 48 M 152 30 L 184 30"/>
+          <path id="mR" class="letra-resplandor" d="M 215 48 L 215 12 L 238 30 L 262 12 L 262 48"/>
+          <path id="mH" class="letra-hilo" d="M 215 48 L 215 12 L 238 30 L 262 12 L 262 48"/>
+          <path id="oR" class="letra-resplandor" d="M 302 30 Q 302 10, 328 10 Q 355 10, 355 30 Q 355 50, 328 50 Q 302 50, 302 30"/>
+          <path id="oH" class="letra-hilo" d="M 302 30 Q 302 10, 328 10 Q 355 10, 355 30 Q 355 50, 328 50 Q 302 50, 302 30"/>
+        </g>
+      </svg>
+      <div class="foto-revelar" id="fotoRevelar">
+        <div class="foto-marco">
+          <div class="foto-interior">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='300' fill='%23F5EFE6'%3E%3Crect width='240' height='300'/%3E%3Ctext x='50%25' y='50%25' fill='%23A63D4040' text-anchor='middle' dy='.3em' font-size='14'%3EFoto%3C/text%3E%3C/svg%3E" alt="Nuestro amor" id="fotoRevelarImg">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HÉROE MÁGICO CON ONDAS -->
+<div class="hero-magico" id="heroMagico">
+  <div class="hero-fondo"></div>
+  <div class="circulo-pulsante" id="circuloPulsante"></div>
+  <div class="onda-magica d1" id="onda1"></div>
+  <div class="onda-magica d2" id="onda2"></div>
+  <div class="onda-magica d3" id="onda3"></div>
+  <div class="destello" id="destello1"></div>
+  <div class="destello" id="destello2"></div>
+  <div class="destello" id="destello3"></div>
+  <div class="destello" id="destello4"></div>
+  <div class="destello" id="destello5"></div>
+  <div class="hero-contenido">
+    <div class="frase-magica" id="frasePequena">
+      <p class="frase-pequena" id="frasePequenaText">El destino nos unió</p>
+    </div>
+    <div class="frase-magica" id="fraseGrande">
+      <h1 class="frase-grande" id="frasePrincipal"></h1>
+    </div>
+    <div class="linea-decorativa" id="lineaDecorativa"></div>
+    <div class="nombres-hero" id="nombresHero">
+      <p class="nombres-texto" id="nombresTexto">Valentina y Alejandro</p>
+    </div>
+    <p class="texto-secundario" id="textoSecundario">"Los hilos del destino pueden estirarse, enredarse, pero jamás romperse"</p>
+  </div>
+  <div class="scroll-indicador" id="scrollIndicador">
+    <span class="scroll-texto">Descubre nuestra historia</span>
+    <div class="scroll-flecha"></div>
+  </div>
+</div>
+
+<!-- Fondo Mágico Dinámico -->
+<div class="fondo-magico" id="fondoMagico">
+  <div class="fondo-base"></div>
+  <div class="fondo-gradiente uno"></div>
+  <div class="fondo-gradiente dos"></div>
+  <div class="fondo-gradiente tres"></div>
+</div>
+
+<!-- Contenido principal -->
+<main class="contenido" id="contenido">
+  <section class="seccion">
+    <h2 class="titulo"><i>Nuestros</i> Momentos</h2>
+    <div class="galeria" id="galeria">
+      <div class="foto-galeria" data-indice="0">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340' fill='%2312100e'%3E%3Crect width='340' height='340'/%3E%3Ctext x='50%25' y='50%25' fill='%23B8965A40' text-anchor='middle' dy='.3em' font-size='14'%3EFoto 1%3C/text%3E%3C/svg%3E" alt="1" id="fotoGaleria1">
+        <div class="pie-foto"><p id="caption1">Donde todo comenzó</p></div>
+        <div class="ver-mas"><i class="fas fa-expand"></i></div>
+      </div>
+      <div class="foto-galeria" data-indice="1">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340' fill='%2312100e'%3E%3Crect width='340' height='340'/%3E%3Ctext x='50%25' y='50%25' fill='%23B8965A40' text-anchor='middle' dy='.3em' font-size='14'%3EFoto 2%3C/text%3E%3C/svg%3E" alt="2" id="fotoGaleria2">
+        <div class="pie-foto"><p id="caption2">Nuestra primera aventura</p></div>
+        <div class="ver-mas"><i class="fas fa-expand"></i></div>
+      </div>
+      <div class="foto-galeria" data-indice="2">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340' fill='%2312100e'%3E%3Crect width='340' height='340'/%3E%3Ctext x='50%25' y='50%25' fill='%23B8965A40' text-anchor='middle' dy='.3em' font-size='14'%3EFoto 3%3C/text%3E%3C/svg%3E" alt="3" id="fotoGaleria3">
+        <div class="pie-foto"><p id="caption3">Momentos inolvidables</p></div>
+        <div class="ver-mas"><i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="contenedor-mensaje">
+      <h2 class="titulo"><i>Mi</i> Promesa</h2>
+      <div class="caja-mensaje">
+        <p class="texto-mensaje">
+          <span class="escrito" id="escrito"></span>
+          <span class="cursor"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <h2 class="titulo"><i>Juntos</i> Desde Siempre</h2>
+    <div class="contador">
+      <div class="tiempo-item"><div class="tiempo-numero" id="dias">0</div><div class="tiempo-texto">Días</div></div>
+      <div class="tiempo-item"><div class="tiempo-numero" id="horas">0</div><div class="tiempo-texto">Horas</div></div>
+      <div class="tiempo-item"><div class="tiempo-numero" id="minutos">0</div><div class="tiempo-texto">Minutos</div></div>
+      <div class="tiempo-item"><div class="tiempo-numero" id="segundos">0</div><div class="tiempo-texto">Segundos</div></div>
+    </div>
+    <button class="boton" id="btnCorazones">Si me extrañas, toca aquí</button>
+  </section>
+
+  <section class="seccion">
+    <div class="galeria" style="max-width: 350px;">
+      <div class="foto-galeria" data-indice="3">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='340' fill='%2312100e'%3E%3Crect width='350' height='340'/%3E%3Ctext x='50%25' y='50%25' fill='%23B8965A40' text-anchor='middle' dy='.3em' font-size='14'%3EFoto 4%3C/text%3E%3C/svg%3E" alt="Para siempre" id="fotoGaleria4">
+        <div class="pie-foto"><p>Para siempre...</p></div>
+        <div class="ver-mas"><i class="fas fa-expand"></i></div>
+      </div>
+    </div>
+    <button class="boton boton-wp" id="btnWhatsapp">
+      <i class="fab fa-whatsapp"></i> Dime algo bonito
+    </button>
+    <div class="marca-agua">
+      <div class="marca-linea"></div>
+      <p class="marca-pequena">Diseñado exclusivamente para ti</p>
+      <p class="marca-grande">Mágica Link</p>
+    </div>
+  </section>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <button class="modal-cerrar" id="modalCerrar"><i class="fas fa-times"></i></button>
+  <button class="modal-nav modal-anterior" id="modalAnterior"><i class="fas fa-chevron-left"></i></button>
+  <div class="modal-contenido">
+    <div class="modal-foto"><img id="modalImg" src="" alt=""></div>
+    <div class="modal-poema">
+      <h3 class="modal-poema-titulo" id="modalTitulo"></h3>
+      <div class="modal-poema-texto" id="modalTexto"></div>
+    </div>
+  </div>
+  <button class="modal-nav modal-siguiente" id="modalSiguiente"><i class="fas fa-chevron-right"></i></button>
+</div>
+
+<div class="btn-musica" id="btnMusica"><i class="fas fa-music" id="iconoMusica"></i></div>
+<audio id="bgMusic" loop preload="none"><source src="" type="audio/mpeg"></audio>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const fotosData = [
+    { img: "", titulo: "Donde todo comenzó", poema: "<p>En un instante, el destino te cruzó en mi camino,</p><p>y supe desde entonces que eras mi destino.</p><p>Tus ojos brillaban como estrellas en la noche,</p><p>y en tu sonrisa encontré mi norte y mi broche.</p>" },
+    { img: "", titulo: "Nuestra primera aventura", poema: "<p>Caminamos juntos por senderos desconocidos,</p><p>descubriendo mundos que teníamos escondidos.</p><p>Cada paso a tu lado es una nueva historia,</p><p>un capítulo más de nuestra eterna memoria.</p>" },
+    { img: "", titulo: "Momentos inolvidables", poema: "<p>Las risas compartidas, los secretos susurrados,</p><p>momentos que guardo en mi alma, tatuados.</p><p>Cada instante contigo es un tesoro,</p><p>que protejo con amor, como el más fino oro.</p>" },
+    { img: "", titulo: "Para siempre", poema: "<p>El tiempo pasa, pero nuestro amor permanece,</p><p>como río eterno que nunca desfallece.</p><p>Te prometo hoy, mañana y siempre,</p><p>ser el refugio donde tu corazón siente.</p>" }
+  ];
+
+  let fotoActual = 0;
+  const pantallaHilo = document.getElementById('pantallaHilo');
+  const contenedorSvg = document.getElementById('contenedorSvg');
+  const resplandor = document.getElementById('resplandor');
+  const fotoRevelar = document.getElementById('fotoRevelar');
+  const contenido = document.getElementById('contenido');
+  const btnMusica = document.getElementById('btnMusica');
+  const fondoMagico = document.getElementById('fondoMagico');
+  const heroMagico = document.getElementById('heroMagico');
+  const btnEmpezar = document.getElementById('btnEmpezar');
+  const corazonHilo = document.getElementById('corazonHilo');
+  const corazonResplandor = document.getElementById('corazonResplandor');
+  const letras = ['t', 'e', 'a', 'm', 'o'];
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalImg = document.getElementById('modalImg');
+  const modalTitulo = document.getElementById('modalTitulo');
+  const modalTexto = document.getElementById('modalTexto');
+
+  let reproduciendo = false;
+  let iniciado = false;
+  let heroVisible = false;
+
+  const CONFIG = {
+    name1: 'Valentina',
+    name2: 'Alejandro',
+    dateStart: '2023-01-01',
+    mainPhrase: 'Eres mi destino',
+    waNumber: '521234567890',
+    heroFrase: 'Eres mi destino',
+    secondaryText: 'Los hilos del destino pueden estirarse, enredarse, pero jamás romperse',
+    photos: [],
+    captions: [],
+    poems: [],
+    mensajes: [
+      "Desde que llegaste a mi vida, cada día tiene sentido...",
+      "Eres mi lugar favorito en todo el universo.",
+      "Prometo amarte hoy, mañana y por siempre."
+    ],
+    bgMusic: ''
+  };
+
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'templateData') {
+      const d = e.data.data;
+      if (d) Object.assign(CONFIG, d);
+      applyConfig();
+    }
+  });
+
+  function applyConfig() {
+    if (CONFIG.name1 && CONFIG.name2) {
+      const namesEl = document.getElementById('nombresTexto');
+      if (namesEl) namesEl.textContent = CONFIG.name1 + ' y ' + CONFIG.name2;
+    }
+    if (CONFIG.heroFrase) {
+      document.getElementById('frasePrincipal').innerHTML = '';
+    }
+    if (CONFIG.secondaryText) {
+      document.getElementById('textoSecundario').textContent = '"' + CONFIG.secondaryText + '"';
+    }
+    if (CONFIG.photos) {
+      CONFIG.photos.forEach(function(p, i) {
+        if (p && i < 4) {
+          var galImg = document.getElementById('fotoGaleria' + (i + 1));
+          if (galImg && galImg.dataset && galImg.dataset.placeholder) { galImg.src = p; }
+          fotosData[i].img = p;
+        }
+      });
+    }
+    if (CONFIG.captions) {
+      CONFIG.captions.forEach(function(c, i) {
+        var cap = document.getElementById('caption' + (i + 1));
+        if (cap && c) cap.textContent = c;
+        if (fotosData[i]) fotosData[i].titulo = c || fotosData[i].titulo;
+      });
+    }
+    if (CONFIG.dateStart) {
+      var inicio = new Date(CONFIG.dateStart);
+    }
+    if (CONFIG.waNumber) {
+      var btn = document.getElementById('btnWhatsapp');
+      if (btn) btn.onclick = function() { window.open('https://wa.me/' + CONFIG.waNumber + '?text=' + encodeURIComponent('Esta carta me llegó al corazón ♡'), '_blank'); };
+    }
+    if (CONFIG.bgMusic) {
+      document.getElementById('bgMusic').querySelector('source').src = CONFIG.bgMusic;
+    }
+    if (CONFIG.mainPhrase) {
+      CONFIG.heroFrase = CONFIG.mainPhrase;
+    }
+  }
+
+  function iniciarMusicaFondo() {
+    var audio = document.getElementById('bgMusic');
+    if (audio) {
+      audio.volume = 0.3;
+      audio.play().catch(function() {});
+    }
+    reproduciendo = true;
+    var icono = document.getElementById('iconoMusica');
+    if (icono) { icono.classList.remove('fa-music'); icono.classList.add('fa-pause'); }
+  }
+
+  function detenerMusicaFondo() {
+    var audio = document.getElementById('bgMusic');
+    if (audio) audio.pause();
+    reproduciendo = false;
+    var icono = document.getElementById('iconoMusica');
+    if (icono) { icono.classList.remove('fa-pause'); icono.classList.add('fa-music'); }
+  }
+
+  btnMusica.addEventListener('click', function() {
+    if (reproduciendo) { detenerMusicaFondo(); } else { iniciarMusicaFondo(); }
+  });
+
+  function crearFondoMagico() {
+    var posiciones = [
+      { x: 10, y: 20, tipo: 1 }, { x: 25, y: 60, tipo: 2 }, { x: 40, y: 30, tipo: 3 },
+      { x: 55, y: 70, tipo: 1 }, { x: 70, y: 25, tipo: 2 }, { x: 85, y: 55, tipo: 3 },
+      { x: 15, y: 80, tipo: 2 }, { x: 60, y: 15, tipo: 1 }, { x: 30, y: 45, tipo: 3 },
+      { x: 75, y: 85, tipo: 1 }, { x: 90, y: 40, tipo: 2 }, { x: 5, y: 50, tipo: 3 },
+      { x: 45, y: 90, tipo: 2 }, { x: 20, y: 10, tipo: 1 }, { x: 80, y: 75, tipo: 3 }
+    ];
+    posiciones.forEach(function(pos, i) {
+      var luz = document.createElement('div');
+      luz.className = 'luz-flotante tipo-' + pos.tipo;
+      luz.style.left = pos.x + '%';
+      luz.style.top = pos.y + '%';
+      luz.style.animationDelay = (i * 0.8) + 's';
+      fondoMagico.appendChild(luz);
+    });
+    for (var i = 0; i < 12; i++) {
+      var polvo = document.createElement('div');
+      polvo.className = 'polvo-ascendente';
+      polvo.style.left = (5 + Math.random() * 90) + '%';
+      polvo.style.animationDelay = (Math.random() * 18) + 's';
+      polvo.style.animationDuration = (15 + Math.random() * 10) + 's';
+      fondoMagico.appendChild(polvo);
+    }
+  }
+
+  function abrirModal(indice) {
+    fotoActual = indice;
+    var data = fotosData[indice];
+    modalImg.src = data.img;
+    modalTitulo.textContent = data.titulo;
+    modalTexto.innerHTML = data.poema;
+    modalOverlay.classList.add('visible');
+  }
+  function cerrarModal() { modalOverlay.classList.remove('visible'); }
+  function fotoAnterior() { abrirModal((fotoActual - 1 + fotosData.length) % fotosData.length); }
+  function fotoSiguiente() { abrirModal((fotoActual + 1) % fotosData.length); }
+
+  document.querySelectorAll('.foto-galeria').forEach(function(foto) {
+    foto.addEventListener('click', function() { abrirModal(parseInt(foto.dataset.indice)); });
+  });
+  document.getElementById('modalCerrar').addEventListener('click', cerrarModal);
+  document.getElementById('modalAnterior').addEventListener('click', fotoAnterior);
+  document.getElementById('modalSiguiente').addEventListener('click', fotoSiguiente);
+  modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) cerrarModal(); });
+  document.addEventListener('keydown', function(e) {
+    if (!modalOverlay.classList.contains('visible')) return;
+    if (e.key === 'Escape') cerrarModal();
+    if (e.key === 'ArrowLeft') fotoAnterior();
+    if (e.key === 'ArrowRight') fotoSiguiente();
+  });
+
+  function activarOndasMagicas() {
+    var ondas = ['onda1', 'onda2', 'onda3'];
+    ondas.forEach(function(id, i) {
+      setTimeout(function() {
+        var onda = document.getElementById(id);
+        onda.classList.add('activa');
+        setInterval(function() {
+          onda.classList.remove('activa');
+          setTimeout(function() { onda.classList.add('activa'); }, 100);
+        }, 8000);
+      }, i * 2500);
+    });
+  }
+  function activarCirculoPulsante() { document.getElementById('circuloPulsante').classList.add('activo'); }
+  function activarDestellos() {
+    var destellos = ['destello1', 'destello2', 'destello3', 'destello4', 'destello5'];
+    var posicionesD = [{ x: 20, y: 30 }, { x: 75, y: 25 }, { x: 50, y: 60 }, { x: 30, y: 70 }, { x: 80, y: 65 }];
+    destellos.forEach(function(id, i) {
+      var destello = document.getElementById(id);
+      destello.style.left = posicionesD[i].x + '%';
+      destello.style.top = posicionesD[i].y + '%';
+      setTimeout(function() {
+        function activarDestello() { destello.classList.add('activo'); setTimeout(function() { destello.classList.remove('activo'); }, 2500); }
+        activarDestello();
+        setInterval(activarDestello, 6000);
+      }, i * 1200);
+    });
+  }
+
+  function animarFraseHero() {
+    var frasePrincipal = document.getElementById('frasePrincipal');
+    var frase = CONFIG.heroFrase || 'Eres mi destino';
+    frasePrincipal.innerHTML = '';
+    frase.split('').forEach(function(letra, index) {
+      var span = document.createElement('span');
+      span.className = 'letra-animada';
+      span.textContent = letra === ' ' ? '\u00A0' : letra;
+      span.style.animationDelay = (index * 0.08) + 's';
+      frasePrincipal.appendChild(span);
+    });
+    setTimeout(function() {
+      document.querySelectorAll('.letra-animada').forEach(function(letra) { letra.classList.add('visible'); });
+    }, 500);
+  }
+
+  function secuenciaHero() {
+    heroMagico.classList.add('visible');
+    heroVisible = true;
+    activarCirculoPulsante();
+    activarOndasMagicas();
+    activarDestellos();
+    setTimeout(function() { document.getElementById('frasePequena').classList.add('visible'); }, 800);
+    setTimeout(function() { animarFraseHero(); }, 2000);
+    setTimeout(function() { document.getElementById('lineaDecorativa').classList.add('visible'); }, 3500);
+    setTimeout(function() { document.getElementById('nombresHero').classList.add('visible'); }, 4300);
+    setTimeout(function() { document.getElementById('textoSecundario').classList.add('visible'); }, 4900);
+    setTimeout(function() { document.getElementById('scrollIndicador').classList.add('visible'); }, 5700);
+  }
+
+  function scrollAlContenido() {
+    heroMagico.classList.add('oculto');
+    heroVisible = false;
+    setTimeout(function() {
+      contenido.classList.add('visible');
+      btnMusica.classList.add('visible');
+      crearFondoMagico();
+      iniciarObservadorScroll();
+      iniciarEscritura();
+      iniciarContador();
+    }, 500);
+  }
+
+  document.getElementById('scrollIndicador').addEventListener('click', scrollAlContenido);
+  heroMagico.addEventListener('wheel', function(e) { if (heroVisible && e.deltaY > 0) scrollAlContenido(); });
+
+  function crearPolvoEstelar(duracion) {
+    var intervalo = setInterval(function() {
+      var x = 30 + Math.random() * 40;
+      var y = 15 + Math.random() * 55;
+      var polvo = document.createElement('div');
+      polvo.className = 'polvo-estelar';
+      var tam = 2 + Math.random() * 4;
+      var color = Math.random() > 0.5 ? '#A63D40' : '#B8965A';
+      polvo.style.cssText = 'left:' + x + '%;top:' + y + '%;width:' + tam + 'px;height:' + tam + 'px;background:' + color + ';box-shadow:0 0 ' + (tam * 2) + 'px ' + color + ';';
+      var op = 1, esc = 1, vx = (Math.random() - 0.5) * 0.4, vy = (Math.random() - 0.5) * 0.4, px = x, py = y;
+      function animar() {
+        op -= 0.02; esc += 0.05; px += vx; py += vy;
+        polvo.style.opacity = Math.max(0, op);
+        polvo.style.transform = 'scale(' + esc + ')';
+        polvo.style.left = px + '%';
+        polvo.style.top = py + '%';
+        if (op > 0) requestAnimationFrame(animar); else polvo.remove();
+      }
+      animar();
+    }, 150);
+    setTimeout(function() { clearInterval(intervalo); }, duracion);
+  }
+
+  function crearPuntoLuz(duracion) {
+    var punto = document.createElement('div');
+    punto.className = 'punto-luz';
+    contenedorSvg.appendChild(punto);
+    var puntos = [
+      {x:50,y:82},{x:42,y:62},{x:38,y:45},{x:42,y:30},{x:55,y:18},{x:72,y:16},
+      {x:88,y:22},{x:98,y:35},{x:100,y:50},{x:98,y:35},{x:108,y:22},{x:122,y:16},
+      {x:138,y:18},{x:150,y:30},{x:158,y:45},{x:162,y:62},{x:150,y:82},{x:100,y:95}
+    ];
+    var inicio = Date.now();
+    function animar() {
+      var transcurrido = Date.now() - inicio;
+      var progreso = Math.min(transcurrido / duracion, 1);
+      var idx = progreso * (puntos.length - 1);
+      var i = Math.floor(idx);
+      var t = idx - i;
+      var p1 = puntos[Math.min(i, puntos.length - 1)];
+      var p2 = puntos[Math.min(i + 1, puntos.length - 1)];
+      var x = p1.x + (p2.x - p1.x) * t;
+      var y = p1.y + (p2.y - p1.y) * t;
+      punto.style.left = (x / 200 * 100) + '%';
+      punto.style.top = (y / 100 * 100) + '%';
+      punto.style.opacity = '1';
+      if (progreso < 1) requestAnimationFrame(animar);
+      else { punto.style.opacity = '0'; setTimeout(function() { punto.remove(); }, 500); }
+    }
+    animar();
+  }
+
+  function crearExplosionPetaros() {
+    var centroX = window.innerWidth / 2;
+    var centroY = window.innerHeight / 2;
+    for (var i = 0; i < 50; i++) {
+      (function(idx) { setTimeout(function() { crearPetalo(centroX, centroY); }, idx * 40); })(i);
+    }
+  }
+
+  function crearPetalo(x, y) {
+    var petalo = document.createElement('div');
+    petalo.className = 'petalo';
+    var tono = 340 + Math.random() * 30;
+    var tam = 0.5 + Math.random() * 0.6;
+    var rotIni = Math.random() * 360;
+    petalo.innerHTML = '<div class="petalo-forma" style="background:linear-gradient(135deg,hsl(' + tono + ',72%,78%) 0%,hsl(' + tono + ',62%,58%) 50%,hsl(' + (tono - 8) + ',52%,42%) 100%);transform:scale(' + tam + ') rotate(' + rotIni + 'deg);"></div>';
+    petalo.style.left = x + 'px';
+    petalo.style.top = y + 'px';
+    pantallaHilo.appendChild(petalo);
+    var angulo = Math.random() * Math.PI * 2;
+    var vel = 1.5 + Math.random() * 2.5;
+    var vx = Math.cos(angulo) * vel, vy = Math.sin(angulo) * vel - 0.8;
+    var posX = x, posY = y, rot = rotIni, op = 1;
+    function animar() {
+      posX += vx; posY += vy + 0.15; vx *= 0.995; vy *= 0.995; rot += 1.5; op -= 0.006;
+      petalo.style.left = posX + 'px'; petalo.style.top = posY + 'px';
+      petalo.style.opacity = Math.max(0, op);
+      petalo.querySelector('.petalo-forma').style.transform = 'scale(' + tam + ') rotate(' + rot + 'deg)';
+      if (op > 0 && posY < window.innerHeight + 50) requestAnimationFrame(animar); else petalo.remove();
+    }
+    animar();
+  }
+
+  function secuenciaMagica() {
+    if (iniciado) return;
+    iniciado = true;
+    btnEmpezar.style.display = 'none';
+    resplandor.classList.add('visible');
+    setTimeout(function() {
+      iniciarMusicaFondo();
+      corazonHilo.classList.add('dibujar');
+      corazonResplandor.classList.add('dibujar');
+      crearPolvoEstelar(5000);
+      crearPuntoLuz(5000);
+    }, 600);
+    setTimeout(function() {
+      for (var i = 0; i < letras.length; i++) {
+        (function(idx) {
+          setTimeout(function() {
+            var letraH = document.getElementById(letras[idx] + 'H');
+            var letraR = document.getElementById(letras[idx] + 'R');
+            if (letraH) letraH.classList.add('dibujar');
+            if (letraR) letraR.classList.add('dibujar');
+          }, idx * 1100);
+        })(i);
+      }
+    }, 5600);
+    setTimeout(function() { crearExplosionPetaros(); }, 11100);
+    setTimeout(function() {
+      corazonHilo.style.transition = 'opacity 1.5s ease';
+      corazonResplandor.style.transition = 'opacity 1.5s ease';
+      corazonHilo.style.opacity = '0';
+      corazonResplandor.style.opacity = '0';
+      document.querySelectorAll('.letra-hilo, .letra-resplandor').forEach(function(el) {
+        el.style.transition = 'opacity 1.5s ease'; el.style.opacity = '0';
+      });
+      resplandor.style.opacity = '0';
+      fotoRevelar.classList.add('visible');
+    }, 12900);
+    setTimeout(function() {
+      pantallaHilo.classList.add('oculta');
+    }, 16900);
+    setTimeout(function() { secuenciaHero(); }, 17900);
+  }
+
+  function iniciarEscritura() {
+    var escrito = document.getElementById('escrito');
+    var mensajes = CONFIG.mensajes;
+    var iMsg = 0, iCar = 0, borrando = false;
+    function escribir() {
+      var actual = mensajes[iMsg];
+      if (!borrando && iCar < actual.length) {
+        escrito.textContent += actual[iCar]; iCar++;
+        setTimeout(escribir, 48);
+      } else if (!borrando && iCar === actual.length) {
+        setTimeout(function() { borrando = true; setTimeout(escribir, 28); }, 2800);
+      } else if (borrando && iCar > 0) {
+        escrito.textContent = actual.substring(0, iCar - 1); iCar--;
+        setTimeout(escribir, 22);
+      } else {
+        borrando = false; iMsg = (iMsg + 1) % mensajes.length;
+        setTimeout(escribir, 350);
+      }
+    }
+    var obs = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) { setTimeout(escribir, 550); obs.disconnect(); }
+    });
+    obs.observe(document.querySelector('.contenedor-mensaje'));
+  }
+
+  function iniciarContador() {
+    var inicio = new Date(CONFIG.dateStart || '2023-01-01');
+    function act() {
+      var diff = new Date() - inicio;
+      document.getElementById('dias').textContent = Math.floor(diff / 86400000);
+      document.getElementById('horas').textContent = Math.floor((diff % 86400000) / 3600000);
+      document.getElementById('minutos').textContent = Math.floor((diff % 3600000) / 60000);
+      document.getElementById('segundos').textContent = Math.floor((diff % 60000) / 1000);
+    }
+    setInterval(act, 1000); act();
+  }
+
+  function iniciarObservadorScroll() {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.titulo, .foto-galeria').forEach(function(el, i) {
+      setTimeout(function() { obs.observe(el); }, i * 70);
+    });
+  }
+
+  function lluviaCorazones() {
+    function crear() {
+      var c = document.createElement('div');
+      c.innerHTML = '♡';
+      c.style.cssText = 'position:fixed;left:' + (Math.random() * window.innerWidth) + 'px;top:-22px;font-size:' + (14 + Math.random() * 12) + 'px;color:' + (Math.random() > 0.5 ? '#A63D40' : '#D4A574') + ';opacity:0.8;pointer-events:none;z-index:1000;';
+      document.body.appendChild(c);
+      var y = -22;
+      var vel = 0.7 + Math.random() * 1.3;
+      var bal = Math.random() * 1.8 - 0.9;
+      function caer() {
+        y += vel; c.style.top = y + 'px';
+        c.style.left = (parseFloat(c.style.left) + Math.sin(y * 0.045) * bal) + 'px';
+        if (y < window.innerHeight + 25) requestAnimationFrame(caer); else c.remove();
+      }
+      caer();
+    }
+    var int = setInterval(crear, 140);
+    setTimeout(function() { clearInterval(int); }, 4200);
+  }
+
+  document.getElementById('btnCorazones').addEventListener('click', lluviaCorazones);
+  document.getElementById('btnWhatsapp').addEventListener('click', function() {
+    window.open('https://wa.me/?text=' + encodeURIComponent('Esta carta me llegó al corazón ♡'), '_blank');
+  });
+
+  btnEmpezar.addEventListener('click', secuenciaMagica);
+
+  // Check URL params for initial config
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('name1')) CONFIG.name1 = params.get('name1');
+  if (params.get('name2')) CONFIG.name2 = params.get('name2');
+  if (params.get('date')) CONFIG.dateStart = params.get('date');
+  if (params.get('phrase')) CONFIG.mainPhrase = params.get('phrase');
+  if (params.get('waNumber')) CONFIG.waNumber = params.get('waNumber');
+  applyConfig();
+});
+</script>
+</body>
+</html>
